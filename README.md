@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
 First, run the development server:
@@ -14,23 +12,30 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Pages
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+**1. Login Page (Landing Page)**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Application starts here
+- If user has logged in, application will direct user to HR Dashboard or Regular Dashboard based on access token
 
-## Learn More
+<br></br>
+**2. HR Dashboard**
 
-To learn more about Next.js, take a look at the following resources:
+- Only accessible by HR users
+- **Attendance Tab**
+  - Table of attendance of all employees, with date filter
+  - View tap in & tap out times and uploaded image
+- **Employee Tab**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+  - Table of employees
+  - HR can update, delete, or create employees
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<br></br>
+**3. Dashboard**
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Attendance dashboard for users to tap in, tap out, and upload image proof
+- Components:
+  - **Stopwatch Clock** - this clock starts when user taps in for the day. When user opens the page again, the clock will show the amount of time user has worked.
+  - **Tap in/Tap out Button** - user can click this button to start or end their work day.
+  - **Upload Image Button** - user can use this button to upload proof of WFH (image only)
