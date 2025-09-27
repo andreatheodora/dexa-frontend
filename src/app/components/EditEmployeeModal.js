@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiTrash } from "react-icons/fi";
 import api from "@/utils/api";
 import { URL_USER } from "@/constants/api";
 
 export default function EditEmployeeModal({ employee, onClose, onSave }) {
   const [form, setForm] = useState({
+    ...employee,
     salary_gross: employee.salary_gross ?? 0,
     address_line1: employee.address_line1 ?? "",
     position: employee.position ?? "",
     division: employee.division ?? "",
-    ...employee,
   });
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const handleChange = (e) => {
+    if (e.target.name == "division" && e.target.value == "HR") {
+      setForm({
+        ...form,
+        is_hr: true,
+        division: e.target.value,
+      });
+      return;
+    }
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -21,6 +29,10 @@ export default function EditEmployeeModal({ employee, onClose, onSave }) {
     e.preventDefault();
     onSave(form);
   };
+
+  useEffect(() => {
+    console.log(form);
+  }, [form]);
 
   const handleDeleteUser = async () => {
     try {
