@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+import {
+  FaAngleDoubleLeft,
+  FaAngleLeft,
+  FaAngleRight,
+  FaAngleDoubleRight,
+} from "react-icons/fa";
+
 import api from "@/utils/api";
 import { URL_USER, URL_SIGNUP } from "@/constants/api";
 import EditEmployeeModal from "./EditEmployeeModal";
@@ -11,10 +18,17 @@ export default function EmployeeTable() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(2);
+  const [lastPage, setLastPage] = useState(1);
+
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await api.get(URL_USER);
+        const response = await api.get(
+          `${URL_USER}?count=${count}&page=${page}`
+        );
+        setLastPage(Math.ceil(response.headers["x-total-count"] / count));
         setEmployees(response.data);
       } catch (e) {
         console.error(e);
@@ -23,7 +37,7 @@ export default function EmployeeTable() {
       }
     };
     fetchEmployees();
-  }, [showEditModal, showAddModal]);
+  }, [showEditModal, showAddModal, page, count]);
 
   const handleRowClick = (employee) => {
     setSelected(employee);
@@ -114,6 +128,63 @@ export default function EmployeeTable() {
             ))}
           </tbody>
         </table>
+
+        {/**TABLE FOOTER */}
+        <div className="py-2 flex flex-row items-center justify-between">
+          <div>
+            Showing{" "}
+            <span>
+              <input
+                className="w-[30px] focus:outline-none"
+                type="number"
+                min={1}
+                value={count}
+                onChange={(e) => {
+                  setCount(e.target.value);
+                }}
+              ></input>
+            </span>{" "}
+            per page
+          </div>
+          <div className="items-center flex gap-2">
+            <button
+              onClick={() => {
+                setPage(1);
+              }}
+            >
+              <FaAngleDoubleLeft size={18} className="hover:cursor-pointer" />
+            </button>
+            <button
+              onClick={() => {
+                if (page == 1) return;
+                setPage((prev) => prev - 1);
+              }}
+            >
+              <FaAngleLeft size={18} className="hover:cursor-pointer" />
+            </button>
+            <span>
+              {page}/{lastPage}{" "}
+            </span>
+            <button
+              onClick={() => {
+                if (page == lastPage) {
+                  setPage(1);
+                  return;
+                }
+                setPage((prev) => prev + 1);
+              }}
+            >
+              <FaAngleRight size={18} className="hover:cursor-pointer" />
+            </button>
+            <button
+              onClick={() => {
+                setPage(lastPage);
+              }}
+            >
+              <FaAngleDoubleRight size={18} className="hover:cursor-pointer" />
+            </button>
+          </div>
+        </div>
 
         {showEditModal && selected && (
           <EditEmployeeModal

@@ -158,10 +158,7 @@ export default function HRDashboard() {
                 <input
                   name="date"
                   type="date"
-                  defaultValue={`${currentYear}-${currentMonth
-                    .toString()
-                    .padStart(2, "0")}-${currentDate}`}
-                  onChange={handleFilterChange}
+                  onBlur={handleFilterChange}
                   className="mb-2 rounded-lg focus:outline-none p-1 border border-black/[.08]"
                 />
                 <span>Month</span>
@@ -182,7 +179,7 @@ export default function HRDashboard() {
                   type="number"
                   defaultValue={currentYear}
                   min={0}
-                  onChange={handleFilterChange}
+                  onBlur={handleFilterChange}
                   className="mb-2 rounded-lg focus:outline-none p-1 border border-black/[.08]"
                 />
                 <div className="flex gap-2 mt-2 justify-end">

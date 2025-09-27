@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { FaImage } from "react-icons/fa";
+import {
+  FaImage,
+  FaAngleDoubleLeft,
+  FaAngleLeft,
+  FaAngleRight,
+  FaAngleDoubleRight,
+} from "react-icons/fa";
 import { supabase } from "@/utils/supabaseClient";
 import api from "@/utils/api";
 
@@ -11,11 +17,15 @@ export default function AttendanceTable({ date, month, year, userDocNo }) {
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState(null);
 
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [count, setCount] = useState(5);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await api.get(
-          `${URL_ATTENDANCE}?year=${year}&month=${month}&date=${date}&user_document_no=${userDocNo}`
+          `${URL_ATTENDANCE}?year=${year}&month=${month}&date=${date}&user_document_no=${userDocNo}&count=${count}&page=${page}`
         );
 
         const newData = response.data.map((item) => {
@@ -35,6 +45,7 @@ export default function AttendanceTable({ date, month, year, userDocNo }) {
             image_url: item.image_url ?? null,
           };
         });
+        setLastPage(Math.ceil(response.headers["x-total-count"] / count));
         setData(newData);
       } catch (e) {
         console.error("Failed to fetch attendance data: ", e);
@@ -44,7 +55,7 @@ export default function AttendanceTable({ date, month, year, userDocNo }) {
     };
 
     fetchData();
-  }, []);
+  }, [page, count]);
 
   async function getImageUrl(path) {
     if (path) {
@@ -104,6 +115,62 @@ export default function AttendanceTable({ date, month, year, userDocNo }) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="py-2 flex flex-row items-center justify-between">
+        <div>
+          Showing{" "}
+          <span>
+            <input
+              className="w-[30px] focus:outline-none"
+              type="number"
+              min={1}
+              value={count}
+              onChange={(e) => {
+                setCount(e.target.value);
+              }}
+            ></input>
+          </span>{" "}
+          per page
+        </div>
+        <div className="items-center flex gap-2">
+          <button
+            onClick={() => {
+              setPage(1);
+            }}
+          >
+            <FaAngleDoubleLeft size={18} className="hover:cursor-pointer" />
+          </button>
+          <button
+            onClick={() => {
+              if (page == 1) return;
+              setPage((prev) => prev - 1);
+            }}
+          >
+            <FaAngleLeft size={18} className="hover:cursor-pointer" />
+          </button>
+          <span>
+            {page}/{lastPage}{" "}
+          </span>
+          <button
+            onClick={() => {
+              if (page == lastPage) {
+                setPage(1);
+                return;
+              }
+              setPage((prev) => prev + 1);
+            }}
+          >
+            <FaAngleRight size={18} className="hover:cursor-pointer" />
+          </button>
+          <button
+            onClick={() => {
+              setPage(lastPage);
+            }}
+          >
+            <FaAngleDoubleRight size={18} className="hover:cursor-pointer" />
+          </button>
+        </div>
       </div>
       {showImageModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-20">
