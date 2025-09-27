@@ -53,12 +53,12 @@ export default function Home() {
         password,
       });
 
-      console.log(response);
       const { data } = response;
 
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("is_hr", data.is_hr);
+        localStorage.setItem("name", data.name);
 
         if (data.is_hr) {
           router.push("/hr-dashboard");

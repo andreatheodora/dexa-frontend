@@ -13,28 +13,36 @@ import {
 import { FaCamera } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { useAuthTokenCheck } from "@/utils/hooks/useAuthTokenCheck";
+import { months, dayNames } from "@/constants/string";
 
 export default function Dashboard() {
   const [isWorking, setIsWorking] = useState(false);
   // const [tapInTime, setTapInTime] = useState(null);
+  const [firstName, setFirstName] = useState("");
   const [seconds, setSeconds] = useState(0);
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [today, setToday] = useState("");
+  const [displayDate, setDisplayDate] = useState("");
   const [dayComplete, setDayComplete] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const router = useRouter();
 
+  useEffect(() => {
+    setFirstName(localStorage.getItem("name").split(" ")[0]);
+  }, []);
+
   useAuthTokenCheck();
 
+  const today = new Date();
+  const day = dayNames[today.getDay()];
+  const date = today.getDate();
+  const month = today.getMonth();
+  const year = today.getFullYear();
   useEffect(() => {
-    const date = new Date();
-    const formattedDate = date.toLocaleDateString("id-ID");
-    setToday(formattedDate);
+    setDisplayDate(`${date} ${months[month]} ${year}`);
   }, []);
 
   useEffect(() => {
@@ -142,34 +150,39 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("is_hr");
+    localStorage.removeItem("name");
     router.push("/");
   };
 
   return (
-    <>
-      <div className="font-mono flex justify-end">
+    <div className="h-screen">
+      <div className="font-mono flex flex-row justify-between">
+        <span className="px-8 py-4 text-sm">Hello, {firstName}</span>
         <button
           className="hover:cursor-pointer flex items-center space-x-2 px-8 py-4"
           onClick={handleLogout}
         >
-          <FiLogOut size={20} />
-          <span>Logout</span>
+          <FiLogOut size={18} />
+          <span className="text-sm">Logout</span>
         </button>
       </div>
-      <div className="font-mono flex flex-col items-center justify-center min-h-screen">
-        <h2 style={{ fontSize: 48 }}>{today}</h2>
+      <div className="font-mono flex flex-col items-center justify-between h-[90vh] py-12">
+        <div className="flex flex-col gap-2 text-center justify-center">
+          <h3>{day.toUpperCase()}</h3>
+          <h2>{displayDate}</h2>
+        </div>
+
         {!dayComplete && (
           <>
-            {isWorking && (
-              <h2 className="mt-4" style={{ fontSize: 124 }}>
-                {formatTime(seconds)}
-              </h2>
-            )}
+            <h2 style={{ fontSize: 124 }}>
+              {isWorking ? formatTime(seconds) : "00:00:00"}
+            </h2>
+
             <button
               type="submit"
               onClick={handleTap}
-              style={{ fontSize: 32 }}
-              className="hover:cursor-pointer font-sans rounded-full mt-6 border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base px-10 py-6 sm:w-auto"
+              style={{ fontSize: 24, fontWeight: 180 }}
+              className="hover:cursor-pointer font-sans rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc] px-15 py-4 sm:w-auto"
             >
               {isWorking ? "End Workday" : "Start Workday"}
             </button>
@@ -251,6 +264,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

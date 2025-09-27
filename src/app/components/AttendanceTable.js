@@ -5,17 +5,18 @@ import api from "@/utils/api";
 
 import { URL_ATTENDANCE } from "@/constants/api";
 
-export default function AttendanceTable() {
+export default function AttendanceTable({ date, month, year, userDocNo }) {
   const [data, setData] = useState([]);
   const [showImageModal, setShowImageModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loadingImg, setLoadingImg] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get(URL_ATTENDANCE);
+        const response = await api.get(
+          `${URL_ATTENDANCE}?year=${year}&month=${month}&date=${date}&user_document_no=${userDocNo}`
+        );
 
         const newData = response.data.map((item) => {
           const date = `${item.date}/${item.month}/${item.year}`;
@@ -61,9 +62,15 @@ export default function AttendanceTable() {
   if (loading) return <p> Loading...</p>;
 
   return (
-    <>
+    <div className="w-6xl">
+      <div className="flex flex-row items-start mb-4">
+        <input
+          placeholder="Search employee"
+          className="w-[300px] p-2 border border-black/[.1] focus:outline-none rounded-lg text-sm px-4"
+        ></input>
+      </div>
       <div className="overflow-x-auto">
-        <table className="w-4xl border border-gray-200">
+        <table className="w-full border border-gray-200">
           <thead className="bg-gray-100">
             <tr>
               <th className="py-2 px-4 border-b text-left">Name</th>
@@ -111,28 +118,7 @@ export default function AttendanceTable() {
                   className="object-contain rounded-md h-full"
                 />
               )}
-              {imageUrl && loadingImg && (
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-                  ></path>
-                </svg>
-              )}
+
               {!imageUrl && (
                 <div className="flex justify-center items-center h-full">
                   No image uploaded.
@@ -153,6 +139,6 @@ export default function AttendanceTable() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
