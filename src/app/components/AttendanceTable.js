@@ -9,7 +9,8 @@ export default function AttendanceTable() {
   const [data, setData] = useState([]);
   const [showImageModal, setShowImageModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState("");
+  const [loadingImg, setLoadingImg] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,14 +21,17 @@ export default function AttendanceTable() {
           const date = `${item.date}/${item.month}/${item.year}`;
 
           const tapIn = new Date(item.tap_in).toLocaleTimeString();
-          const tapOut = new Date(item.tap_out).toLocaleTimeString();
+          let tapOut = "";
+          if (item.tap_out) {
+            tapOut = new Date(item.tap_out).toLocaleTimeString();
+          }
 
           return {
             name: item.name,
             date: date,
             tap_in: tapIn,
             tap_out: tapOut,
-            image_url: item.image_url ?? "",
+            image_url: item.image_url ?? null,
           };
         });
         setData(newData);
@@ -42,13 +46,15 @@ export default function AttendanceTable() {
   }, []);
 
   async function getImageUrl(path) {
-    try {
-      const { data } = supabase.storage.from("dexa-intv").getPublicUrl(path);
+    if (path) {
+      try {
+        const { data } = supabase.storage.from("dexa-intv").getPublicUrl(path);
 
-      setImageUrl(data.publicUrl);
-    } catch (e) {
-      console.log(`Failed getting image url: ${e}`);
-      console.error(e);
+        setImageUrl(data.publicUrl);
+      } catch (e) {
+        console.log(`Failed getting image url: ${e}`);
+        console.error(e);
+      }
     }
   }
 
@@ -98,16 +104,38 @@ export default function AttendanceTable() {
             <div className="font-bold justify-center flex mb-4 text-lg ">
               Attendance Proof
             </div>
-            <div>
+            <div className="w-[400px] h-[300px] rounded-md border border-black/[.08]">
               {imageUrl && (
                 <img
                   src={imageUrl}
-                  className="w-[400px] h-[300px] border-black/[.08] object-contain rounded-md border"
+                  className="object-contain rounded-md h-full"
                 />
               )}
+              {imageUrl && loadingImg && (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                  ></path>
+                </svg>
+              )}
               {!imageUrl && (
-                <div className="flex justify-center items-center w-[400px] h-[300px]">
-                  No image uploaded
+                <div className="flex justify-center items-center h-full">
+                  No image uploaded.
                 </div>
               )}
             </div>
@@ -115,6 +143,7 @@ export default function AttendanceTable() {
               <button
                 onClick={() => {
                   setShowImageModal(false);
+                  setImageUrl(null);
                 }}
                 className="bg-black/[.8] text-white rounded-lg px-2 py-1 hover:bg-black/[.6] hover:cursor-pointer"
               >
