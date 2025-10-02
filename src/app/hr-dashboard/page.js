@@ -63,9 +63,12 @@ export default function HRDashboard() {
       console.log(e.target.value);
       setMonth(month);
       setYear(year);
+      setDate("");
       setDateFilter(`${months[month - 1]} ${year}`);
     } else if (e.target.name == "year") {
       setYear(e.target.value);
+      setMonth("");
+      setDate("");
       setDateFilter(e.target.value);
     }
   };

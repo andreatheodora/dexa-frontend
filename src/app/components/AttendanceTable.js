@@ -11,7 +11,12 @@ import api from "@/utils/api";
 
 import { URL_ATTENDANCE } from "@/constants/api";
 
-export default function AttendanceTable({ date, month, year, userDocNo }) {
+export default function AttendanceTable({
+  date = "",
+  month = "",
+  year = "",
+  userDocNo,
+}) {
   const [data, setData] = useState([]);
   const [showImageModal, setShowImageModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,7 +50,11 @@ export default function AttendanceTable({ date, month, year, userDocNo }) {
             image_url: item.image_url ?? null,
           };
         });
-        setLastPage(Math.ceil(response.headers["x-total-count"] / count));
+        if (Math.ceil(response.headers["x-total-count"] / count == 0)) {
+          setLastPage(1);
+        } else {
+          setLastPage(Math.ceil(response.headers["x-total-count"] / count));
+        }
         setData(newData);
       } catch (e) {
         console.error("Failed to fetch attendance data: ", e);
@@ -122,7 +131,7 @@ export default function AttendanceTable({ date, month, year, userDocNo }) {
           Showing{" "}
           <span>
             <input
-              className="w-[30px] focus:outline-none"
+              className="w-[40px] focus:outline-none"
               type="number"
               min={1}
               value={count}

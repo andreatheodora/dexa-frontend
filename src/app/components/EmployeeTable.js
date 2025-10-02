@@ -135,7 +135,7 @@ export default function EmployeeTable() {
             Showing{" "}
             <span>
               <input
-                className="w-[30px] focus:outline-none"
+                className="w-[40px] focus:outline-none"
                 type="number"
                 min={1}
                 value={count}

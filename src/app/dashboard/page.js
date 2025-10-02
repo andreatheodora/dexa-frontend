@@ -31,7 +31,9 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    setFirstName(localStorage.getItem("name").split(" ")[0]);
+    if (localStorage.getItem("token")) {
+      setFirstName(localStorage.getItem("name").split(" ")[0]);
+    }
   }, []);
 
   useAuthTokenCheck();
